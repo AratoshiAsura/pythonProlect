@@ -28,7 +28,8 @@ snake_speed = 0
 
 font_style = pygame.font.SysFont(None, 50)
 
-def message(msg,color):
+
+def message(msg, color):
     mesg = font_style.render(msg, True, color)
     dis.blit(mesg, [dis_width/2, dis_height/2])
 
