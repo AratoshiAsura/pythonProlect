@@ -4,8 +4,10 @@ import pygame
 pygame.init()
 
 white = (255, 255, 255)
+yellow = (255, 255, 102)
 black = (0, 0, 0)
 red = (255, 0, 0)
+green = (0, 255, 0)
 blue = (0, 0, 255)
 
 dis_width = 800
@@ -19,12 +21,18 @@ clock = pygame.time.Clock()
 snake_block = 10
 snake_speed = 15
 
-font_style = pygame.font.SysFont(None, 30)
+font_style = pygame.font.SysFont("bahnschrift", 25)
+score_font = pygame.font.SysFont("comicsansms", 35)
+
+
+def our_snake(snake_block, snake_List):
+    for x in snake_List:
+        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
 
 
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
-    dis.blit(mesg, [dis_width / 3, dis_height / 3])
+    dis.blit(mesg, [dis_width / 6, dis_height / 3])
 
 
 def gameloop():
@@ -37,14 +45,18 @@ def gameloop():
     x1_change = 0
     y1_change = 0
 
+    snake_List = []
+    Length_of_snake = 1
+
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-    foody = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+    foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
 
     while not game_over:
 
         while game_close == True:
             dis.fill(white)
             message("Проиграл, жмякни Q-выйти или E-играть снова", red)
+
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -71,18 +83,33 @@ def gameloop():
                 elif event.key == pygame.K_DOWN:
                     y1_change = snake_block
                     x1_change = 0
+
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
             game_close = True
-
         x1 += x1_change
         y1 += y1_change
-        dis.fill(white)
-        pygame.draw.rect(dis, blue, [foodx, foodx, snake_block, snake_block])
-        pygame.draw.rect(dis, blue, [x1, y1, snake_block, snake_block])
+        dis.fill(blue)
+        pygame.draw.rect(dis, green, [foodx, foody, snake_block, snake_block])
+        snake_Head = []
+        snake_Head.append(x1)
+        snake_Head.append(y1)
+        snake_List.append(snake_Head)
+        if len(snake_List) > Length_of_snake:
+            del snake_List[0]
+
+        for x in snake_List[:-1]:
+            if x == snake_Head:
+                game_close = True
+
+        our_snake(snake_block, snake_List)
+
         pygame.display.update()
 
         if x1 == foodx and y1 == foody:
-            print("Нямка!")
+            foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+            foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+            Length_of_snake += 1
+
         clock.tick(snake_speed)
 
     pygame.quit()
